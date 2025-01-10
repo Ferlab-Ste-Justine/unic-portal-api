@@ -1,0 +1,1 @@
+NODE_EXTRA_CA_CERTS=/Users/rico/chu/ca-unic-qa.crt npm run dev
