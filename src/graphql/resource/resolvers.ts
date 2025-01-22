@@ -23,3 +23,27 @@ export const resourceResolver = async (parent, args) => {
     return null;
   }
 };
+
+export const resourceCountResolver = async (parent, args) => {
+  try {
+    const resSearch = await esClient.search({
+      index: esResourceIndex,
+      size: 0,
+      body: {
+        aggs: {
+          index_counts: {
+            terms: {
+              field: '_index',
+              size: 100, // Adjust if you have more indices
+            },
+          },
+        },
+      },
+    });
+    const buckets: { key: string; doc_count: number } = resSearch.body.aggregations.index_counts.buckets[0];
+    return buckets.doc_count;
+  } catch (error) {
+    console.error('variablesResolver error', error);
+    return null;
+  }
+};

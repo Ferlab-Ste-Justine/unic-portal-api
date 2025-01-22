@@ -1,30 +1,58 @@
-import { Client } from '@opensearch-project/opensearch';
-
 import { esVariableIndex } from '#src/config/env';
 
 import client from './client';
 
-export const fetchFileStats = async (): Promise<number> => {
+export const fetchProjectsCount = async (indexName: string): Promise<number> => {
   try {
-    const { body } = await client.search({
-      index: esVariableIndex,
-      body: { aggs: { types_count: { value_count: { field: 'replace_me' } } } },
-      size: 0,
+    const response = await client.count({
+      index: indexName,
+      body: {
+        query: {
+          term: {
+            rs_is_project: true,
+          },
+        },
+      },
     });
-    return body?.aggregations?.types_count.value;
+    return response.body.count;
   } catch (error) {
-    console.log('[fetchFileStats] error: ', error);
+    console.log('[fetchProjectsCount] error: ', error);
     return null;
   }
 };
 
-export const countNOfDocs = async (esClient: Client, indexName: string): Promise<number> => {
-  const respCounts = await esClient.count({
-    index: indexName,
-  });
-  return respCounts?.body?.count;
+export const fetchSourceSystemCount = async (indexName: string): Promise<number> => {
+  try {
+    const response = await client.count({
+      index: indexName,
+      body: {
+        query: {
+          term: {
+            rs_type: 'source_system', // Match the term "source_system" in the "rs_type" field
+          },
+        },
+      },
+    });
+    return response.body.count;
+  } catch (error) {
+    console.log('[fetchProjectsCount] error: ', error);
+    return null;
+  }
 };
 
+export const fetchCount = async (indexName: string): Promise<number> => {
+  try {
+    const respCounts = await client.count({
+      index: indexName,
+    });
+    return respCounts?.body?.count;
+  } catch (error) {
+    console.log('[fetchCount] error: ', error);
+    return null;
+  }
+};
+
+// keep this one for example
 export const fetchFileFormatStats = async (experimental_strategy = 'WGS'): Promise<number> => {
   try {
     const { body } = await client.search({
