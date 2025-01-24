@@ -22,3 +22,11 @@ export const ResourceType = new GraphQLObjectType({
     tables: { type: new GraphQLList(TableType) },
   }),
 });
+
+export const ResourcesType = new GraphQLObjectType({
+  name: 'ResourcesType',
+  fields: () => ({
+    hits: { type: new GraphQLList(ResourceType) },
+    total: { type: GraphQLFloat },
+  }),
+});

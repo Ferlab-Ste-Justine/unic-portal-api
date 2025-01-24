@@ -1,4 +1,28 @@
-import { GraphQLBoolean, GraphQLFloat, GraphQLObjectType, GraphQLString } from 'graphql';
+import {
+  GraphQLBoolean,
+  GraphQLFloat,
+  GraphQLInputObjectType,
+  GraphQLInt,
+  GraphQLList,
+  GraphQLObjectType,
+  GraphQLString,
+} from 'graphql';
+
+export const FilterByType = new GraphQLInputObjectType({
+  name: 'FilterByType',
+  fields: () => ({
+    field: { type: GraphQLString },
+    value: { type: GraphQLString },
+  }),
+});
+
+export const ArgsType = {
+  from: { type: GraphQLInt },
+  limit: { type: GraphQLInt },
+  sortBy: { type: GraphQLString },
+  orderBy: { type: GraphQLString },
+  filterBy: { type: new GraphQLList(FilterByType) },
+};
 
 export const SourceSystemType = new GraphQLObjectType({
   name: 'SourceSystemType',

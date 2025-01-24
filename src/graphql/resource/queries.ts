@@ -1,10 +1,13 @@
-import { GraphQLFloat, GraphQLList } from 'graphql';
+import { GraphQLFloat } from 'graphql';
+
+import { ArgsType } from '#src/graphql/common/types';
 
 import { resourceCountResolver, resourceResolver } from './resolvers';
-import { ResourceType } from './types';
+import { ResourcesType } from './types';
 
 export const getResources = {
-  type: new GraphQLList(ResourceType),
+  type: ResourcesType,
+  args: ArgsType,
   description: 'get resources',
   resolve: resourceResolver,
 };

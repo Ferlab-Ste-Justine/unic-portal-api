@@ -1,10 +1,11 @@
-import { GraphQLList } from 'graphql';
+import { ArgsType } from '#src/graphql/common/types';
 
 import { variablesResolver } from './resolvers';
-import { VariableType } from './types';
+import { VariablesType } from './types';
 
 export const getVariables = {
-  type: new GraphQLList(VariableType),
+  type: VariablesType,
+  args: ArgsType,
   description: 'get variables',
   resolve: variablesResolver,
 };

@@ -1,10 +1,11 @@
-import { GraphQLList } from 'graphql';
+import { ArgsType } from '#src/graphql/common/types';
 
 import { tableResolver } from './resolvers';
-import { TableType } from './types';
+import { TablesType } from './types';
 
 export const getTables = {
-  type: new GraphQLList(TableType),
+  type: TablesType,
+  args: ArgsType,
   description: 'get tables',
   resolve: tableResolver,
 };

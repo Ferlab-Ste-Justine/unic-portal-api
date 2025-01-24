@@ -18,3 +18,11 @@ export const VariableType = new GraphQLObjectType({
     var_from_source_systems: { type: new GraphQLList(SourceSystemType) },
   }),
 });
+
+export const VariablesType = new GraphQLObjectType({
+  name: 'VariablesType',
+  fields: () => ({
+    hits: { type: new GraphQLList(VariableType) },
+    total: { type: GraphQLFloat },
+  }),
+});

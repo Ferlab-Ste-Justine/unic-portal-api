@@ -16,3 +16,11 @@ export const TableType = new GraphQLObjectType({
     variables: { type: new GraphQLList(VariableType) },
   }),
 });
+
+export const TablesType = new GraphQLObjectType({
+  name: 'TablesType',
+  fields: () => ({
+    hits: { type: new GraphQLList(TableType) },
+    total: { type: GraphQLFloat },
+  }),
+});

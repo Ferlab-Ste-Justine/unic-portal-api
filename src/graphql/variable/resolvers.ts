@@ -1,28 +1,10 @@
 import { esVariableIndex } from '#src/config/env';
-import { esClient } from '#src/services/elasticsearch';
+import { commonResolver } from '#src/graphql/common/resolvers';
 
 export const variablesResolver = async (parent, args) => {
   try {
-    //todo: get all filters from args to build the query
-    console.log('variablesResolver here', parent, args);
-
-    const resSearch = await esClient.search({
-      index: esVariableIndex,
-      body: {
-        query: {
-          match_all: {},
-        },
-      },
-      // size: 10000,
-    });
-
-    console.log('variablesResolver here 2', resSearch);
-
-    const sources = resSearch?.body?.hits?.hits?.map((hit) => hit._source);
-
-    console.log('variablesResolver sources', sources);
-
-    return sources;
+    const { hits, total } = await commonResolver(args, esVariableIndex);
+    return { hits, total };
   } catch (error) {
     console.error('variablesResolver error', error);
     return null;
