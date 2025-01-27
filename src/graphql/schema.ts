@@ -1,6 +1,6 @@
 import { GraphQLObjectType, GraphQLSchema } from 'graphql';
 
-import { getResources, getResourcesCount } from '#src/graphql/resource/queries';
+import { getResources, getResourcesCount, getResourcesStats } from '#src/graphql/resource/queries';
 import { getTables } from '#src/graphql/table/queries';
 import { getVariables } from '#src/graphql/variable/queries';
 
@@ -21,6 +21,7 @@ const query = new GraphQLObjectType({
     getResources,
     getTables,
     getResourcesCount,
+    getResourcesStats,
   },
 });
 

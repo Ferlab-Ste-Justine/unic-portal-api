@@ -1,16 +1,23 @@
 import { esClient } from '#src/services/elasticsearch';
-import { buildBody } from '#src/services/elasticsearch/utils';
+import buildQuery, { QueryOptions } from '#src/services/elasticsearch/buildQuery';
 
 export const commonResolver = async (args, esIndex) => {
   try {
-    const { from, limit, sortBy, orderBy, filterBy } = args;
-    const body = buildBody({ from, limit, sortBy, orderBy, filterBy });
+    const queryOptions: QueryOptions = {
+      match: args.match,
+      term: args.term,
+      range: args.range,
+      sort: args.sort,
+      pagination: args.pagination,
+      fields: args.fields,
+      aggregations: args.aggregations,
+      search_after: args.search_after,
+    };
+    const body = buildQuery(queryOptions);
 
     const response = await esClient.search({
       index: esIndex,
       body,
-      size: limit || 10, // Default limit to 10
-      from: from || 0, // Default start from 0
     });
 
     const hits = response?.body?.hits?.hits?.map((hit) => hit._source);

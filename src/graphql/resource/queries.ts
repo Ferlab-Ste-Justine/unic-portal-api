@@ -1,8 +1,8 @@
 import { GraphQLFloat } from 'graphql';
 
-import { ArgsType } from '#src/graphql/common/types';
+import { ArgsType, StatsType } from '#src/graphql/common/types';
 
-import { resourceCountResolver, resourceResolver } from './resolvers';
+import { resourceCountResolver, resourceResolver, resourceStatsResolver } from './resolvers';
 import { ResourcesType } from './types';
 
 export const getResources = {
@@ -16,4 +16,10 @@ export const getResourcesCount = {
   type: GraphQLFloat,
   description: 'get resources count',
   resolve: resourceCountResolver,
+};
+
+export const getResourcesStats = {
+  type: StatsType,
+  description: 'get resources stats',
+  resolve: resourceStatsResolver,
 };
