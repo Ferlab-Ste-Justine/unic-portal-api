@@ -28,5 +28,6 @@ export const ResourcesType = new GraphQLObjectType({
   fields: () => ({
     hits: { type: new GraphQLList(ResourceType) },
     total: { type: GraphQLFloat },
+    search_after: { type: new GraphQLList(GraphQLString) },
   }),
 });

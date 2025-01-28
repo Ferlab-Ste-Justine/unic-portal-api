@@ -22,5 +22,6 @@ export const TablesType = new GraphQLObjectType({
   fields: () => ({
     hits: { type: new GraphQLList(TableType) },
     total: { type: GraphQLFloat },
+    search_after: { type: new GraphQLList(GraphQLString) },
   }),
 });

@@ -24,5 +24,6 @@ export const VariablesType = new GraphQLObjectType({
   fields: () => ({
     hits: { type: new GraphQLList(VariableType) },
     total: { type: GraphQLFloat },
+    search_after: { type: new GraphQLList(GraphQLString) },
   }),
 });

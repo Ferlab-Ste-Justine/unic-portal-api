@@ -3,8 +3,7 @@ import { commonResolver } from '#src/graphql/common/resolvers';
 
 export const variablesResolver = async (parent, args) => {
   try {
-    const { hits, total } = await commonResolver(args, esVariableIndex);
-    return { hits, total };
+    return commonResolver(args, esVariableIndex);
   } catch (error) {
     console.error('variablesResolver error', error);
     return null;

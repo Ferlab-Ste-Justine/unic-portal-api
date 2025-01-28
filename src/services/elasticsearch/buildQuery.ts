@@ -102,8 +102,8 @@ const buildQuery = (options: QueryOptions) => {
     }));
   }
 
-  // Add pagination or search_after
-  if (options.search_after) {
+  // Add pagination or search_after (default sort is required)
+  if (options.search_after?.length && options.sort?.length) {
     query.search_after = options.search_after;
     query.size = options.pagination?.size ?? 50; // Ensure size is still set
   } else {

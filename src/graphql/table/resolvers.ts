@@ -3,8 +3,7 @@ import { commonResolver } from '#src/graphql/common/resolvers';
 
 export const tableResolver = async (parent, args) => {
   try {
-    const { hits, total } = await commonResolver(args, esTableIndex);
-    return { hits, total };
+    return commonResolver(args, esTableIndex);
   } catch (error) {
     console.error('tableResolver error', error);
     return null;
