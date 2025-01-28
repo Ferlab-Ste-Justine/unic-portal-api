@@ -90,10 +90,10 @@ const buildQuery = (options: QueryOptions) => {
   // Add pagination or search_after
   if (options.search_after) {
     query.search_after = options.search_after;
-    query.size = options.pagination?.size ?? 10; // Ensure size is still set
-  } else if (options.pagination) {
-    query.from = options.pagination.from ?? 0;
-    query.size = options.pagination.size ?? 10;
+    query.size = options.pagination?.size ?? 50; // Ensure size is still set
+  } else {
+    query.from = options.pagination?.from ?? 0;
+    query.size = options.pagination?.size ?? 50;
   }
 
   // Add fields to include in the response

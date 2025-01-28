@@ -37,7 +37,7 @@ export const resourceStatsResolver = async (parent, args) => {
     const queryOptions: QueryOptions = {
       fields: ['stat_etl', 'rs_type', 'rs_id'],
     };
-    const getBody = (filterBy) => buildQuery({ ...queryOptions, match: filterBy });
+    const getBody = (filterBy) => buildQuery({ ...queryOptions, match: filterBy, pagination: { size: 1000 } });
 
     const [resWarehouse, resResearchProject, resEQP, resSourceSystem] = await Promise.all([
       esClient.search({ index: esResourceIndex, body: getBody(filterByWarehouse) }),
@@ -52,6 +52,8 @@ export const resourceStatsResolver = async (parent, args) => {
       eqp: resEQP?.body?.hits?.hits?.map((hit) => hit._source),
       source_system: resSourceSystem?.body?.hits?.hits?.map((hit) => hit._source),
     };
+
+    console.log('research_project', JSON.stringify(sources.research_project, null, 2));
 
     const statEtl = {
       warehouse: {
@@ -68,9 +70,7 @@ export const resourceStatsResolver = async (parent, args) => {
         table_count: sources.warehouse.map((warehouse) => warehouse.stat_etl.table_count).reduce((a, b) => a + b, 0),
       },
       research_project: {
-        project_count: sources.research_project
-          .map((research_project) => research_project.stat_etl.project_count)
-          .reduce((a, b) => a + b, 0),
+        project_count: sources.research_project.length,
         domain_count: sources.research_project
           .map((research_project) => research_project.stat_etl.domain_count)
           .reduce((a, b) => a + b, 0),
@@ -85,16 +85,14 @@ export const resourceStatsResolver = async (parent, args) => {
           .reduce((a, b) => a + b, 0),
       },
       eqp: {
-        project_count: sources.eqp.map((eqp) => eqp.stat_etl.project_count).reduce((a, b) => a + b, 0),
+        project_count: sources.eqp.length,
         domain_count: sources.eqp.map((eqp) => eqp.stat_etl.domain_count).reduce((a, b) => a + b, 0),
         source_system_count: sources.eqp.map((eqp) => eqp.stat_etl.source_system_count).reduce((a, b) => a + b, 0),
         variable_count: sources.eqp.map((eqp) => eqp.stat_etl.variable_count).reduce((a, b) => a + b, 0),
         table_count: sources.eqp.map((eqp) => eqp.stat_etl.table_count).reduce((a, b) => a + b, 0),
       },
       source_system: {
-        project_count: sources.source_system
-          .map((source_system) => source_system.stat_etl.project_count)
-          .reduce((a, b) => a + b, 0),
+        project_count: sources.source_system.length,
         domain_count: sources.source_system
           .map((source_system) => source_system.stat_etl.domain_count)
           .reduce((a, b) => a + b, 0),
