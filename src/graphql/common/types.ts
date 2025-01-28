@@ -55,3 +55,11 @@ export interface FreeTextInput {
   fields: string[];
   value: string;
 }
+
+export const FieldAggregationType = new GraphQLObjectType({
+  name: 'FieldAggregationType',
+  fields: () => ({
+    key: { type: GraphQLString },
+    doc_count: { type: GraphQLInt },
+  }),
+});
