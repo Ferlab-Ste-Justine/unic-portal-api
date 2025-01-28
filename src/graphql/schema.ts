@@ -2,6 +2,7 @@ import { GraphQLObjectType, GraphQLSchema } from 'graphql';
 
 import { getResources } from '#src/graphql/resource/queries';
 import { getVariables } from '#src/graphql/variable/queries';
+import { getTables } from '#src/graphql/table/queries';
 
 // FYI GraphQL also support mutations
 // const mutation = new GraphQLObjectType({
@@ -18,6 +19,7 @@ const query = new GraphQLObjectType({
   fields: {
     getVariables,
     getResources,
+    getTables,
   },
 });
 

@@ -11,6 +11,8 @@ export const TableType = new GraphQLObjectType({
     tab_created_at: { type: GraphQLInt },
     tab_last_update: { type: GraphQLInt },
     tab_name: { type: GraphQLString },
+    tab_label_en: { type: GraphQLString },
+    tab_label_fr: { type: GraphQLString },
     resource: { type: ResourceType },
     stat_etl: { type: StatETLType },
     variables: { type: new GraphQLList(VariableType) },

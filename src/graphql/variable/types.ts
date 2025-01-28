@@ -11,6 +11,8 @@ export const VariableType = new GraphQLObjectType({
     var_last_update: { type: GraphQLInt },
     var_created_at: { type: GraphQLInt },
     var_name: { type: GraphQLString },
+    var_label_en: { type: GraphQLString },
+    var_label_fr: { type: GraphQLString },
     var_path: { type: GraphQLString },
     var_value_type: { type: GraphQLString },
     resource: { type: ResourceType },

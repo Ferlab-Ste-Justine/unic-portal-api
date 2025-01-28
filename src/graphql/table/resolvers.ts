@@ -1,15 +1,25 @@
+import * as console from 'node:console';
+
 import { esTableIndex } from '#src/config/env';
+import { FieldInput, FreeTextInput } from '#src/graphql/common/types';
 import { esClient } from '#src/services/elasticsearch';
+import { getFieldQuery, getTextQuery } from '#src/services/elasticsearch/utils';
 
 export const tableResolver = async (parent, args) => {
   try {
-    //todo: get all filters from args to build the query
+    const rawFields: FieldInput[] = args.fields ? args.fields : [];
+    const rawText: FreeTextInput = args.text;
+
+    const termQueryList = rawFields.map((rawField) => getFieldQuery(rawField));
+    const must = rawText ? [...termQueryList, getTextQuery(rawText)] : [...termQueryList];
 
     const resSearch = await esClient.search({
       index: esTableIndex,
       body: {
         query: {
-          match_all: {},
+          bool: {
+            must,
+          },
         },
       },
       // size: 10000,

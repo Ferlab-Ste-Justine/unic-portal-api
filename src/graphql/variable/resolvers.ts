@@ -1,26 +1,31 @@
+import * as console from 'node:console';
+
 import { esVariableIndex } from '#src/config/env';
+import { FieldInput, FreeTextInput } from '#src/graphql/common/types';
 import { esClient } from '#src/services/elasticsearch';
+import { getFieldQuery, getTextQuery } from '#src/services/elasticsearch/utils';
 
 export const variablesResolver = async (parent, args) => {
   try {
-    //todo: get all filters from args to build the query
-    console.log('variablesResolver here', parent, args);
+    const rawFields: FieldInput[] = args.fields ? args.fields : [];
+    const rawText: FreeTextInput = args.text;
+
+    const termQueryList = rawFields.map((rawField) => getFieldQuery(rawField));
+    const must = rawText ? [...termQueryList, getTextQuery(rawText)] : [...termQueryList];
 
     const resSearch = await esClient.search({
       index: esVariableIndex,
       body: {
         query: {
-          match_all: {},
+          bool: {
+            must,
+          },
         },
       },
       // size: 10000,
     });
 
-    console.log('variablesResolver here 2', resSearch);
-
     const sources = resSearch?.body?.hits?.hits?.map((hit) => hit._source);
-
-    console.log('variablesResolver sources', sources);
 
     return sources;
   } catch (error) {
