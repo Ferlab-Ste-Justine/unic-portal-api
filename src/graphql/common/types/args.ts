@@ -66,6 +66,7 @@ export const AggregationOptionType = new GraphQLInputObjectType({
 export const ArgsType = {
   match: { type: new GraphQLList(FieldValueType) },
   term: { type: new GraphQLList(FieldValueType) },
+  or: { type: new GraphQLList(FieldValueType) },
   range: { type: new GraphQLList(RangeOptionType) },
   sort: { type: new GraphQLList(SortOptionType) },
   pagination: { type: PaginationOptionType },

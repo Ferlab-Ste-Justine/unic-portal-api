@@ -53,8 +53,6 @@ export const resourceStatsResolver = async (parent, args) => {
       source_system: resSourceSystem?.body?.hits?.hits?.map((hit) => hit._source),
     };
 
-    console.log('research_project', JSON.stringify(sources.research_project, null, 2));
-
     const statEtl = {
       warehouse: {
         project_count: sources.warehouse

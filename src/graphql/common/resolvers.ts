@@ -6,6 +6,7 @@ export const commonResolver = async (args, esIndex) => {
     const queryOptions: QueryOptions = {
       match: args.match,
       term: args.term,
+      or: args.or,
       range: args.range,
       sort: args.sort,
       pagination: args.pagination,

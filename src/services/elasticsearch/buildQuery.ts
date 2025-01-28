@@ -8,6 +8,11 @@ type TermOption = {
   value: string | number | boolean;
 };
 
+type OrOption = {
+  field: string;
+  value: string | number;
+};
+
 type RangeOption = {
   field: string;
   gte?: number;
@@ -32,6 +37,7 @@ export type QueryOptions = {
   term?: TermOption[];
   range?: RangeOption[];
   sort?: SortOption[];
+  or?: OrOption[];
   pagination?: {
     from?: number; // Only used if `search_after` is not set
     size?: number;
@@ -67,6 +73,15 @@ const buildQuery = (options: QueryOptions) => {
     options.term.forEach(({ field, value }) => {
       query.query.bool.filter.push({
         term: { [field]: value },
+      });
+    });
+  }
+
+  // Add OR conditions (using `should` for OR logic)
+  if (options.or) {
+    options.or.forEach(({ field, value }) => {
+      query.query.bool.should.push({
+        match: { [field]: value }, // You can change this to `term` if you want exact matching
       });
     });
   }
