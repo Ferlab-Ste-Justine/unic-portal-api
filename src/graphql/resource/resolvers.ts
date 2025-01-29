@@ -36,7 +36,7 @@ export const resourceStatsResolver = async (parent, args) => {
     const queryOptions: QueryOptions = {
       fields: ['stat_etl', 'rs_type', 'rs_id'],
     };
-    const getBody = (filterBy) => buildQuery({ ...queryOptions, match: filterBy, pagination: { size: 1000 } });
+    const getBody = (filterBy) => buildQuery({ ...queryOptions, match: filterBy, size: 1000 });
 
     const [resWarehouse, resResearchProject, resEQP, resSourceSystem] = await Promise.all([
       esClient.search({ index: esResourceIndex, body: getBody(filterByWarehouse) }),

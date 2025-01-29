@@ -35,14 +35,6 @@ export const SortOptionType = new GraphQLInputObjectType({
   }),
 });
 
-const PaginationOptionType = new GraphQLInputObjectType({
-  name: 'PaginationOptionType',
-  fields: () => ({
-    from: { type: GraphQLInt },
-    size: { type: GraphQLInt },
-  }),
-});
-
 export const AggregationTypeOptionType = new GraphQLEnumType({
   name: 'AggregationTypeOptionType',
   values: {
@@ -69,7 +61,8 @@ export const ArgsType = {
   or: { type: new GraphQLList(FieldValueType) },
   range: { type: new GraphQLList(RangeOptionType) },
   sort: { type: new GraphQLList(SortOptionType) },
-  pagination: { type: PaginationOptionType },
+  from: { type: GraphQLInt },
+  size: { type: GraphQLInt },
   search_after: { type: new GraphQLList(GraphQLString) },
   aggregations: { type: new GraphQLList(AggregationOptionType) },
 };

@@ -38,10 +38,8 @@ export type QueryOptions = {
   range?: RangeOption[];
   sort?: SortOption[];
   or?: OrOption[];
-  pagination?: {
-    from?: number; // Only used if `search_after` is not set
-    size?: number;
-  };
+  from?: number; // Only used if `search_after` is not set
+  size?: number;
   search_after?: any[]; // Add `search_after` support
   aggregations?: AggregationOption[];
   fields?: string[]; // Specify fields to include in the response
@@ -105,10 +103,10 @@ const buildQuery = (options: QueryOptions) => {
   // Add pagination or search_after (default sort is required)
   if (options.search_after?.length && options.sort?.length) {
     query.search_after = options.search_after;
-    query.size = options.pagination?.size ?? 50; // Ensure size is still set
+    query.size = options.size ?? 50; // Ensure size is still set
   } else {
-    query.from = options.pagination?.from ?? 0;
-    query.size = options.pagination?.size ?? 50;
+    query.from = options.from ?? 0;
+    query.size = options.size ?? 50;
   }
 
   // Add fields to include in the response
