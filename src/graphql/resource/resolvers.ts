@@ -111,3 +111,30 @@ export const resourceStatsResolver = async (parent, args) => {
     return null;
   }
 };
+
+export const resourceTypesResolver = async (parent, args) => {
+  try {
+    // Build an aggregation query to get all unique 'rs_type' values
+    const body = {
+      size: 0, // Don't return actual documents, just aggregations
+      aggs: {
+        unique_rs_types: {
+          terms: { field: 'rs_type', size: 1000 }, // Get all unique values
+        },
+      },
+    };
+
+    const resSearch = await esClient.search({
+      index: esResourceIndex,
+      body,
+    });
+
+    // Extract the unique `rs_type` values from the aggregation
+    const uniqueRsTypes = resSearch?.body?.aggregations?.unique_rs_types?.buckets.map((bucket) => bucket.key);
+
+    return uniqueRsTypes || [];
+  } catch (error) {
+    console.error('resourceTypesResolver error', error);
+    return null;
+  }
+};

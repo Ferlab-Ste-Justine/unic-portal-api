@@ -1,10 +1,20 @@
-import { GraphQLEnumType, GraphQLFloat, GraphQLInputObjectType, GraphQLInt, GraphQLList, GraphQLString } from 'graphql';
+import {
+  GraphQLBoolean,
+  GraphQLEnumType,
+  GraphQLFloat,
+  GraphQLInputObjectType,
+  GraphQLInt,
+  GraphQLList,
+  GraphQLString,
+} from 'graphql';
 
 export const FieldValueType = new GraphQLInputObjectType({
   name: 'FieldValueType',
   fields: () => ({
     field: { type: GraphQLString },
     value: { type: GraphQLString },
+    useWildcard: { type: GraphQLBoolean },
+    useFuzzy: { type: GraphQLBoolean },
   }),
 });
 

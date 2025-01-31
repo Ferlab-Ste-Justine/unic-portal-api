@@ -1,6 +1,11 @@
+// If you want exact matching → Use match.
+// If you want to allow typos → Use fuzzy: true.
+// If you want wildcard searches → Use useWildcard: true.
 type MatchOption = {
   field: string;
   value: string | number;
+  useWildcard?: boolean; // Enable wildcard search
+  useFuzzy?: boolean; // Enable fuzzy search
 };
 
 type TermOption = {
@@ -45,6 +50,8 @@ export type QueryOptions = {
   fields?: string[]; // Specify fields to include in the response
 };
 
+const fuzziness = 'AUTO'; // AUTO allows small typos
+
 const buildQuery = (options: QueryOptions) => {
   const query: any = {
     query: {
@@ -59,11 +66,43 @@ const buildQuery = (options: QueryOptions) => {
 
   // Add match queries
   if (options.match) {
-    options.match.forEach(({ field, value }) => {
-      query.query.bool.must.push({
-        match: { [field]: value },
-      });
+    options.match.forEach(({ field, value, useWildcard, useFuzzy }) => {
+      if (typeof value === 'string') {
+        if (useWildcard && value.includes('*')) {
+          // 🔹 Wildcard query for values with `*`
+          query.query.bool.should.push({
+            wildcard: { [field]: value.toLowerCase() },
+          });
+        }
+        if (useFuzzy) {
+          // 🔹 Fuzzy match query (allows typos)
+          query.query.bool.should.push({
+            match: {
+              [field]: {
+                query: value,
+                fuzziness,
+              },
+            },
+          });
+        }
+        if (!useWildcard && !useFuzzy) {
+          // 🔹 Default match query (for numbers, etc.)
+          query.query.bool.must.push({
+            match: { [field]: value },
+          });
+        }
+      } else {
+        // 🔹 Default match query (for numbers, etc.)
+        query.query.bool.must.push({
+          match: { [field]: value },
+        });
+      }
     });
+
+    // 🔹 Ensure at least one condition matches (Wildcard OR Fuzzy)
+    if (query.query.bool.should.length > 0) {
+      query.query.bool.minimum_should_match = 1;
+    }
   }
 
   // Add term queries
