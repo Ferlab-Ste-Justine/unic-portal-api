@@ -34,6 +34,7 @@ export const ResourceType = new GraphQLObjectType({
     rs_project_folder: { type: GraphQLString },
     rs_project_status: { type: GraphQLString },
     rs_project_pi: { type: GraphQLString },
+    rs_project_erb_id: { type: GraphQLString },
     rs_title: { type: GraphQLString },
     rs_analyst: { type: new GraphQLList(AnalystType) },
   }),
