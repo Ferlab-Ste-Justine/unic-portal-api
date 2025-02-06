@@ -5,7 +5,8 @@ import buildQuery, { QueryOptions } from '#src/services/elasticsearch/buildQuery
 
 export const resourceResolver = async (parent, args) => {
   try {
-    return commonResolver(args, esResourceIndex);
+    const data = await commonResolver(args, esResourceIndex);
+    return data;
   } catch (error) {
     console.error('resourceResolver error', error);
     return null;
