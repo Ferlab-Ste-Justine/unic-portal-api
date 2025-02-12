@@ -1,4 +1,5 @@
 import { GraphQLBoolean, GraphQLFloat, GraphQLObjectType, GraphQLString } from 'graphql';
+
 export {
   FieldValueType,
   RangeOptionType,
@@ -15,6 +16,7 @@ export const SourceSystemType = new GraphQLObjectType({
     rs_code: { type: GraphQLString },
     rs_name: { type: GraphQLString },
     published: { type: GraphQLBoolean },
+    stat_etl: { type: StatETLType },
   }),
 });
 
