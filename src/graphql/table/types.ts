@@ -14,6 +14,10 @@ export const TableType = new GraphQLObjectType({
     resource: { type: ResourceType },
     stat_etl: { type: StatETLType },
     variables: { type: new GraphQLList(VariableType) },
+    tab_label_en: { type: GraphQLString },
+    tab_label_fr: { type: GraphQLString },
+    tab_entity_type: { type: GraphQLString },
+    tab_domain: { type: GraphQLString },
   }),
 });
 
