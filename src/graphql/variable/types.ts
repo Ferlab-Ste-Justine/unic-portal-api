@@ -16,6 +16,8 @@ export const VariableType = new GraphQLObjectType({
     resource: { type: ResourceType },
     table: { type: TableType },
     var_from_source_systems: { type: new GraphQLList(SourceSystemType) },
+    var_label_fr: { type: GraphQLString },
+    var_label_en: { type: GraphQLString },
   }),
 });
 
