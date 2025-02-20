@@ -120,7 +120,7 @@ export const resourceTypesResolver = async (parent, args) => {
       size: 0, // Don't return actual documents, just aggregations
       aggs: {
         unique_rs_types: {
-          terms: { field: 'rs_type', size: 1000 }, // Get all unique values
+          terms: { field: 'rs_type', size: 10000 }, // Get all unique values
         },
       },
     };
