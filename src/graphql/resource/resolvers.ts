@@ -113,7 +113,7 @@ export const resourceStatsResolver = async (parent, args) => {
   }
 };
 
-export const resourceTypesResolver = async (parent, args) => {
+export const resourceTypesResolver = async () => {
   try {
     // Build an aggregation query to get all unique 'rs_type' values
     const body = {

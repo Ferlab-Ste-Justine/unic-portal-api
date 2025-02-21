@@ -70,13 +70,12 @@ const buildQuery = (options: QueryOptions) => {
       if (typeof value === 'string') {
         if (useWildcard && value.includes('*')) {
           // 🔹 Wildcard query for values with `*`
-          query.query.bool.should.push({
+          query.query.bool.must.push({
             wildcard: { [field]: value.toLowerCase() },
           });
-        }
-        if (useFuzzy) {
+        } else if (useFuzzy) {
           // 🔹 Fuzzy match query (allows typos)
-          query.query.bool.should.push({
+          query.query.bool.must.push({
             match: {
               [field]: {
                 query: value,
@@ -84,9 +83,7 @@ const buildQuery = (options: QueryOptions) => {
               },
             },
           });
-        }
-        if (!useWildcard && !useFuzzy) {
-          // 🔹 Default match query (for numbers, etc.)
+        } else {
           query.query.bool.must.push({
             match: { [field]: value },
           });
@@ -98,10 +95,21 @@ const buildQuery = (options: QueryOptions) => {
         });
       }
     });
+  }
 
-    // 🔹 Ensure at least one condition matches (Wildcard OR Fuzzy)
-    if (query.query.bool.should.length > 0) {
-      query.query.bool.minimum_should_match = 1;
+  // Add OR conditions
+  if (options.or) {
+    const orConditions = options.or.map(({ field, value }) => ({
+      match: { [field]: value },
+    }));
+
+    if (orConditions.length > 0) {
+      query.query.bool.filter.push({
+        bool: {
+          should: orConditions,
+          minimum_should_match: 1, // At least one condition must match
+        },
+      });
     }
   }
 
@@ -110,15 +118,6 @@ const buildQuery = (options: QueryOptions) => {
     options.term.forEach(({ field, value }) => {
       query.query.bool.filter.push({
         term: { [field]: value },
-      });
-    });
-  }
-
-  // Add OR conditions (using `should` for OR logic)
-  if (options.or) {
-    options.or.forEach(({ field, value }) => {
-      query.query.bool.should.push({
-        match: { [field]: value }, // You can change this to `term` if you want exact matching
       });
     });
   }

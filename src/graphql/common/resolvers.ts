@@ -33,3 +33,52 @@ export const commonResolver = async (args, esIndex) => {
     return null;
   }
 };
+
+export const uniqueFieldOnIndexResolver = async ({
+  field,
+  index,
+  args,
+}: {
+  field: string;
+  index: string;
+  args?: QueryOptions;
+}) => {
+  try {
+    const or = args?.or;
+
+    // Convert `or` conditions into a valid ES `should` filter
+    const orFilters = or
+      ? or?.map(({ field, value }) => ({
+          match: { [field]: value },
+        }))
+      : [];
+
+    // Build an aggregation query to get all unique (ex: 'resource.rs_type') values
+    const body = {
+      size: 0, // Don't return actual documents, just aggregations
+      query: {
+        bool: {
+          filter: orFilters.length > 0 ? [{ bool: { should: orFilters, minimum_should_match: 1 } }] : [],
+        },
+      },
+      aggs: {
+        unique_rs_fields: {
+          terms: { field, size: 10000 }, // Get all unique values of field
+        },
+      },
+    };
+
+    const resSearch = await esClient.search({
+      index,
+      body,
+    });
+
+    // Extract the unique `field` values from the aggregation
+    const uniqueRsTypes = resSearch?.body?.aggregations?.unique_rs_fields?.buckets.map((bucket) => bucket.key);
+
+    return uniqueRsTypes || [];
+  } catch (error) {
+    console.error('tableResourceUniqueFieldResolver error', error);
+    return null;
+  }
+};
