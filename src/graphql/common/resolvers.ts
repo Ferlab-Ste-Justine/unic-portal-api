@@ -38,17 +38,27 @@ export const uniqueFieldOnIndexResolver = async ({
   field,
   index,
   args,
+  isArray,
 }: {
   field: string;
   index: string;
   args?: QueryOptions;
+  isArray?: boolean;
 }) => {
   try {
     const or = args?.or;
+    const match = args?.match;
 
     // Convert `or` conditions into a valid ES `should` filter
     const orFilters = or
       ? or?.map(({ field, value }) => ({
+          match: { [field]: value },
+        }))
+      : [];
+
+    // Convert `match` conditions into a valid ES `should` filter
+    const matchFilters = match
+      ? match?.map(({ field, value }) => ({
           match: { [field]: value },
         }))
       : [];
@@ -59,13 +69,25 @@ export const uniqueFieldOnIndexResolver = async ({
       query: {
         bool: {
           filter: orFilters.length > 0 ? [{ bool: { should: orFilters, minimum_should_match: 1 } }] : [],
+          must: matchFilters.length > 0 ? [{ bool: { should: matchFilters, minimum_should_match: 1 } }] : [],
         },
       },
-      aggs: {
-        unique_rs_fields: {
-          terms: { field, size: 10000 }, // Get all unique values of field
-        },
-      },
+      aggs: isArray
+        ? {
+            nested_rs_fields: {
+              nested: { path: field.split('.')[0] }, // Extracts the parent path, e.g., 'var_from_source_systems'
+              aggs: {
+                unique_rs_fields: {
+                  terms: { field, size: 10000 }, // Get all unique values of nested field
+                },
+              },
+            },
+          }
+        : {
+            unique_rs_fields: {
+              terms: { field, size: 10000 }, // Regular terms aggregation for non-nested fields
+            },
+          },
     };
 
     const resSearch = await esClient.search({
@@ -74,9 +96,15 @@ export const uniqueFieldOnIndexResolver = async ({
     });
 
     // Extract the unique `field` values from the aggregation
-    const uniqueRsTypes = resSearch?.body?.aggregations?.unique_rs_fields?.buckets.map((bucket) => bucket.key);
+    const buckets = isArray
+      ? resSearch?.body?.aggregations?.nested_rs_fields?.unique_rs_fields?.buckets
+      : resSearch?.body?.aggregations?.unique_rs_fields?.buckets;
+    const uniqueRsTypes = buckets?.map((bucket) => bucket.key) || [];
 
-    return uniqueRsTypes || [];
+    // Sort alphabetically ascending
+    const uniqueRsTypesSorted = uniqueRsTypes?.sort((a, b) => a.localeCompare(b));
+
+    return uniqueRsTypesSorted || [];
   } catch (error) {
     console.error('tableResourceUniqueFieldResolver error', error);
     return null;

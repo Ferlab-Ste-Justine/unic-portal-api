@@ -1,6 +1,6 @@
 import { GraphQLList, GraphQLString } from 'graphql';
 
-import { esTableIndex, esVariableIndex } from '#src/config/env';
+import { esVariableIndex } from '#src/config/env';
 import { uniqueFieldOnIndexResolver } from '#src/graphql/common/resolvers';
 import { ArgsType } from '#src/graphql/common/types';
 
@@ -18,14 +18,20 @@ export const getVariablesResourceTypes = {
   type: new GraphQLList(GraphQLString),
   args: ArgsType,
   description: 'get variables resource types options',
-  resolve: () => uniqueFieldOnIndexResolver({ field: 'resource.rs_type', index: esVariableIndex }),
+  resolve: (_, args) => uniqueFieldOnIndexResolver({ field: 'resource.rs_type', index: esVariableIndex, args }),
 };
 
 export const getVariablesResourceCodes = {
   type: new GraphQLList(GraphQLString),
   args: ArgsType,
   description: 'get variables resource codes options',
-  resolve: () => uniqueFieldOnIndexResolver({ field: 'resource.rs_code', index: esVariableIndex }),
+  resolve: async (_, args) =>
+    uniqueFieldOnIndexResolver({
+      field: 'var_from_source_systems.rs_code',
+      index: esVariableIndex,
+      args,
+      isArray: true,
+    }),
 };
 
 export const getVariablesResourceNames = {

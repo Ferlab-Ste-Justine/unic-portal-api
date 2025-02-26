@@ -1,8 +1,10 @@
 import { GraphQLFloat, GraphQLList, GraphQLString } from 'graphql';
 
+import { esResourceIndex } from '#src/config/env';
+import { uniqueFieldOnIndexResolver } from '#src/graphql/common/resolvers';
 import { ArgsType, StatsType } from '#src/graphql/common/types';
 
-import { resourceCountResolver, resourceResolver, resourceStatsResolver, resourceTypesResolver } from './resolvers';
+import { resourceCountResolver, resourceResolver, resourceStatsResolver } from './resolvers';
 import { ResourcesType } from './types';
 
 export const getResources = {
@@ -27,5 +29,6 @@ export const getResourcesStats = {
 export const getResourcesType = {
   type: new GraphQLList(GraphQLString),
   description: 'get all resources rs_type values',
-  resolve: resourceTypesResolver,
+  args: ArgsType,
+  resolve: (_, args) => uniqueFieldOnIndexResolver({ field: 'rs_type', index: esResourceIndex, args }),
 };

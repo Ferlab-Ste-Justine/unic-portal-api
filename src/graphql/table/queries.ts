@@ -18,7 +18,7 @@ export const getTablesResourceTypes = {
   type: new GraphQLList(GraphQLString),
   args: ArgsType,
   description: 'get tables resource types options',
-  resolve: () => uniqueFieldOnIndexResolver({ field: 'resource.rs_type', index: esTableIndex }),
+  resolve: (_, args) => uniqueFieldOnIndexResolver({ field: 'resource.rs_type', index: esTableIndex, args }),
 };
 
 export const getTablesResourceNames = {
