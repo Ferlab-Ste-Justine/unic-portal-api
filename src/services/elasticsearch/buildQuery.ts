@@ -18,6 +18,8 @@ type OrOption = {
   value: string | number;
 };
 
+type OrGroup = OrOption[];
+
 type RangeOption = {
   field: string;
   gte?: number;
@@ -43,9 +45,10 @@ export type QueryOptions = {
   range?: RangeOption[];
   sort?: SortOption[];
   or?: OrOption[];
+  orGroups?: OrGroup[];
   from?: number; // Only used if `search_after` is not set
   size?: number;
-  search_after?: any[]; // Add `search_after` support
+  search_after?: any[];
   aggregations?: AggregationOption[];
   fields?: string[]; // Specify fields to include in the response
 };
@@ -111,6 +114,18 @@ const buildQuery = (options: QueryOptions) => {
         },
       });
     }
+  }
+
+  if (options.orGroups) {
+    options.orGroups.forEach((group) => {
+      const groupConditions = group.map(({ field, value }) => ({ match: { [field]: value } }));
+      query.query.bool.filter.push({
+        bool: {
+          should: groupConditions,
+          minimum_should_match: 1,
+        },
+      });
+    });
   }
 
   // Add term queries

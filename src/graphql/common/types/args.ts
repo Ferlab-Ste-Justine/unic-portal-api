@@ -69,6 +69,7 @@ export const ArgsType = {
   match: { type: new GraphQLList(FieldValueType) },
   term: { type: new GraphQLList(FieldValueType) },
   or: { type: new GraphQLList(FieldValueType) },
+  orGroups: { type: new GraphQLList(new GraphQLList(FieldValueType)) },
   range: { type: new GraphQLList(RangeOptionType) },
   sort: { type: new GraphQLList(SortOptionType) },
   from: { type: GraphQLInt },

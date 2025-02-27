@@ -7,6 +7,7 @@ export const commonResolver = async (args, esIndex) => {
       match: args.match,
       term: args.term,
       or: args.or,
+      orGroups: args.orGroups,
       range: args.range,
       size: args.size,
       from: args.from,
@@ -48,6 +49,7 @@ export const uniqueFieldOnIndexResolver = async ({
   try {
     const or = args?.or;
     const match = args?.match;
+    const orGroups = args?.orGroups;
 
     // Convert `or` conditions into a valid ES `should` filter
     const orFilters = or
@@ -63,12 +65,27 @@ export const uniqueFieldOnIndexResolver = async ({
         }))
       : [];
 
+    // Convert `orGroups` into a valid ES `should` filter
+    const orGroupFilters = orGroups
+      ? orGroups.map((group) => ({
+          bool: {
+            should: group.map(({ field, value }) => ({
+              match: { [field]: value },
+            })),
+            minimum_should_match: 1,
+          },
+        }))
+      : [];
+
     // Build an aggregation query to get all unique (ex: 'resource.rs_type') values
     const body = {
       size: 0, // Don't return actual documents, just aggregations
       query: {
         bool: {
-          filter: orFilters.length > 0 ? [{ bool: { should: orFilters, minimum_should_match: 1 } }] : [],
+          filter: [
+            ...(orFilters.length > 0 ? [{ bool: { should: orFilters, minimum_should_match: 1 } }] : []),
+            ...orGroupFilters,
+          ],
           must: matchFilters.length > 0 ? [{ bool: { should: matchFilters, minimum_should_match: 1 } }] : [],
         },
       },
