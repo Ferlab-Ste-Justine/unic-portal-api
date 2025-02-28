@@ -22,6 +22,7 @@ export const commonResolver = async (args, esIndex) => {
     const response = await esClient.search({
       index: esIndex,
       body,
+      track_total_hits: true,
     });
 
     const hits = response?.body?.hits?.hits?.map((hit) => hit._source);
@@ -106,6 +107,7 @@ export const uniqueFieldOnIndexResolver = async ({
     const resSearch = await esClient.search({
       index,
       body,
+      track_total_hits: true,
     });
 
     const buckets = isNested

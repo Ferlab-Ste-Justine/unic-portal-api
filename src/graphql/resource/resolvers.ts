@@ -13,7 +13,7 @@ export const resourceResolver = async (parent, args) => {
   }
 };
 
-export const resourceCountResolver = async (parent, args) => {
+export const resourceCountResolver = async () => {
   try {
     const resSearch = await esClient.count({
       index: esResourceIndex,
@@ -27,7 +27,7 @@ export const resourceCountResolver = async (parent, args) => {
   }
 };
 
-export const resourceStatsResolver = async (parent, args) => {
+export const resourceStatsResolver = async () => {
   try {
     const filterByWarehouse = [{ field: 'rs_type', value: 'warehouse' }];
     const filterByResearchProject = [{ field: 'rs_type', value: 'research_project' }];
@@ -37,13 +37,13 @@ export const resourceStatsResolver = async (parent, args) => {
     const queryOptions: QueryOptions = {
       fields: ['stat_etl', 'rs_type', 'rs_id'],
     };
-    const getBody = (filterBy) => buildQuery({ ...queryOptions, match: filterBy, size: 1000 });
+    const getBody = (filterBy) => buildQuery({ ...queryOptions, match: filterBy, size: 10000 });
 
     const [resWarehouse, resResearchProject, resEQP, resSourceSystem] = await Promise.all([
-      esClient.search({ index: esResourceIndex, body: getBody(filterByWarehouse) }),
-      esClient.search({ index: esResourceIndex, body: getBody(filterByResearchProject) }),
-      esClient.search({ index: esResourceIndex, body: getBody(filterByEQP) }),
-      esClient.search({ index: esResourceIndex, body: getBody(filterBySourceSystem) }),
+      esClient.search({ index: esResourceIndex, body: getBody(filterByWarehouse), track_total_hits: true }),
+      esClient.search({ index: esResourceIndex, body: getBody(filterByResearchProject), track_total_hits: true }),
+      esClient.search({ index: esResourceIndex, body: getBody(filterByEQP), track_total_hits: true }),
+      esClient.search({ index: esResourceIndex, body: getBody(filterBySourceSystem), track_total_hits: true }),
     ]);
 
     const sources = {
@@ -109,33 +109,6 @@ export const resourceStatsResolver = async (parent, args) => {
     return statEtl;
   } catch (error) {
     console.error('resourceStatsResolver error', error);
-    return null;
-  }
-};
-
-export const resourceTypesResolver = async () => {
-  try {
-    // Build an aggregation query to get all unique 'rs_type' values
-    const body = {
-      size: 0, // Don't return actual documents, just aggregations
-      aggs: {
-        unique_rs_types: {
-          terms: { field: 'rs_type', size: 10000 }, // Get all unique values
-        },
-      },
-    };
-
-    const resSearch = await esClient.search({
-      index: esResourceIndex,
-      body,
-    });
-
-    // Extract the unique `rs_type` values from the aggregation
-    const uniqueRsTypes = resSearch?.body?.aggregations?.unique_rs_types?.buckets.map((bucket) => bucket.key);
-
-    return uniqueRsTypes || [];
-  } catch (error) {
-    console.error('resourceTypesResolver error', error);
     return null;
   }
 };
