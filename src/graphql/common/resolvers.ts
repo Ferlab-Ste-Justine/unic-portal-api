@@ -1,5 +1,6 @@
 import { esClient } from '#src/services/elasticsearch';
 import buildQuery, { QueryOptions } from '#src/services/elasticsearch/buildQuery';
+import { isNestedField } from '#src/services/elasticsearch/utils';
 
 export const commonResolver = async (args, esIndex) => {
   try {
@@ -39,47 +40,42 @@ export const uniqueFieldOnIndexResolver = async ({
   field,
   index,
   args,
-  isArray,
 }: {
   field: string;
   index: string;
   args?: QueryOptions;
-  isArray?: boolean;
 }) => {
   try {
     const or = args?.or;
     const match = args?.match;
     const orGroups = args?.orGroups;
 
-    // Convert `or` conditions into a valid ES `should` filter
-    const orFilters = or
-      ? or?.map(({ field, value }) => ({
-          match: { [field]: value },
-        }))
-      : [];
+    const isNested = isNestedField(field);
 
-    // Convert `match` conditions into a valid ES `should` filter
-    const matchFilters = match
-      ? match?.map(({ field, value }) => ({
-          match: { [field]: value },
-        }))
-      : [];
+    const buildCondition = (field: string, value: any) =>
+      isNestedField(field)
+        ? {
+            nested: {
+              path: field.split('.')[0],
+              query: { match: { [field]: value } },
+            },
+          }
+        : { match: { [field]: value } };
 
-    // Convert `orGroups` into a valid ES `should` filter
+    // Convert `or`, `match`, and `orGroups` into valid ES filters with nested support
+    const orFilters = or ? or.map(({ field, value }) => buildCondition(field, value)) : [];
+    const matchFilters = match ? match.map(({ field, value }) => buildCondition(field, value)) : [];
     const orGroupFilters = orGroups
       ? orGroups.map((group) => ({
           bool: {
-            should: group.map(({ field, value }) => ({
-              match: { [field]: value },
-            })),
+            should: group.map(({ field, value }) => buildCondition(field, value)),
             minimum_should_match: 1,
           },
         }))
       : [];
 
-    // Build an aggregation query to get all unique (ex: 'resource.rs_type') values
     const body = {
-      size: 0, // Don't return actual documents, just aggregations
+      size: 0,
       query: {
         bool: {
           filter: [
@@ -89,20 +85,20 @@ export const uniqueFieldOnIndexResolver = async ({
           must: matchFilters.length > 0 ? [{ bool: { should: matchFilters, minimum_should_match: 1 } }] : [],
         },
       },
-      aggs: isArray
+      aggs: isNested
         ? {
-            nested_rs_fields: {
-              nested: { path: field.split('.')[0] }, // Extracts the parent path, e.g., 'var_from_source_systems'
+            nested_fields: {
+              nested: { path: field.split('.')[0] },
               aggs: {
-                unique_rs_fields: {
-                  terms: { field, size: 10000 }, // Get all unique values of nested field
+                unique_fields: {
+                  terms: { field, size: 10000 },
                 },
               },
             },
           }
         : {
-            unique_rs_fields: {
-              terms: { field, size: 10000 }, // Regular terms aggregation for non-nested fields
+            unique_fields: {
+              terms: { field, size: 10000 },
             },
           },
     };
@@ -112,18 +108,17 @@ export const uniqueFieldOnIndexResolver = async ({
       body,
     });
 
-    // Extract the unique `field` values from the aggregation
-    const buckets = isArray
-      ? resSearch?.body?.aggregations?.nested_rs_fields?.unique_rs_fields?.buckets
-      : resSearch?.body?.aggregations?.unique_rs_fields?.buckets;
-    const uniqueRsTypes = buckets?.map((bucket) => bucket.key) || [];
+    const buckets = isNested
+      ? resSearch?.body?.aggregations?.nested_fields?.unique_fields?.buckets
+      : resSearch?.body?.aggregations?.unique_fields?.buckets;
+    const uniqueValues = buckets?.map((bucket) => bucket.key) || [];
 
     // Sort alphabetically ascending
-    const uniqueRsTypesSorted = uniqueRsTypes?.sort((a, b) => a.localeCompare(b));
+    const uniqueRsTypesSorted = uniqueValues?.sort((a, b) => a.localeCompare(b));
 
     return uniqueRsTypesSorted || [];
   } catch (error) {
-    console.error('tableResourceUniqueFieldResolver error', error);
+    console.error('uniqueFieldOnIndexResolver error:', error);
     return null;
   }
 };

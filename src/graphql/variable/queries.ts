@@ -30,7 +30,6 @@ export const getVariablesResourceCodes = {
       field: 'var_from_source_systems.rs_code',
       index: esVariableIndex,
       args,
-      isArray: true,
     }),
 };
 

@@ -1,6 +1,9 @@
+import { isNestedField } from './utils';
+
 // If you want exact matching → Use match.
 // If you want to allow typos → Use fuzzy: true.
 // If you want wildcard searches → Use useWildcard: true.
+// fuzzy and wildcard can't work together in Elasticsearch since they rely on different matching mechanisms
 type MatchOption = {
   field: string;
   value: string | number;
@@ -67,50 +70,56 @@ const buildQuery = (options: QueryOptions) => {
     },
   };
 
-  // Add match queries
   if (options.match) {
     options.match.forEach(({ field, value, useWildcard, useFuzzy }) => {
-      if (typeof value === 'string') {
-        if (useWildcard && value.includes('*')) {
-          // 🔹 Wildcard query for values with `*`
-          query.query.bool.must.push({
-            wildcard: { [field]: value.toLowerCase() },
-          });
-        } else if (useFuzzy) {
-          // 🔹 Fuzzy match query (allows typos)
-          query.query.bool.must.push({
-            match: {
-              [field]: {
-                query: value,
-                fuzziness,
-              },
+      if (isNestedField(field)) {
+        query.query.bool.must.push({
+          nested: {
+            path: field.split('.')[0],
+            query: {
+              match: { [field]: value },
             },
-          });
+          },
+        });
+      } else {
+        if (typeof value === 'string') {
+          // 🔹 Wildcard query for values with `*`
+          if (useWildcard && value.includes('*')) {
+            query.query.bool.must.push({
+              wildcard: { [field]: value.toLowerCase() },
+            });
+            // 🔹 Fuzzy match query (allows typos)
+          } else if (useFuzzy) {
+            query.query.bool.must.push({
+              match: { [field]: { query: value, fuzziness } },
+            });
+          } else {
+            query.query.bool.must.push({
+              match: { [field]: value },
+            });
+          }
         } else {
+          // 🔹 Default match query (for numbers, etc.)
           query.query.bool.must.push({
             match: { [field]: value },
           });
         }
-      } else {
-        // 🔹 Default match query (for numbers, etc.)
-        query.query.bool.must.push({
-          match: { [field]: value },
-        });
       }
     });
   }
 
-  // Add OR conditions
   if (options.or) {
-    const orConditions = options.or.map(({ field, value }) => ({
-      match: { [field]: value },
-    }));
+    const orConditions = options.or.map(({ field, value }) =>
+      isNestedField(field)
+        ? { nested: { path: field.split('.')[0], query: { match: { [field]: value } } } }
+        : { match: { [field]: value } }
+    );
 
     if (orConditions.length > 0) {
       query.query.bool.filter.push({
         bool: {
           should: orConditions,
-          minimum_should_match: 1, // At least one condition must match
+          minimum_should_match: 1,
         },
       });
     }
@@ -118,7 +127,11 @@ const buildQuery = (options: QueryOptions) => {
 
   if (options.orGroups) {
     options.orGroups.forEach((group) => {
-      const groupConditions = group.map(({ field, value }) => ({ match: { [field]: value } }));
+      const groupConditions = group.map(({ field, value }) =>
+        isNestedField(field)
+          ? { nested: { path: field.split('.')[0], query: { match: { [field]: value } } } }
+          : { match: { [field]: value } }
+      );
       query.query.bool.filter.push({
         bool: {
           should: groupConditions,
@@ -128,7 +141,6 @@ const buildQuery = (options: QueryOptions) => {
     });
   }
 
-  // Add term queries
   if (options.term) {
     options.term.forEach(({ field, value }) => {
       query.query.bool.filter.push({
@@ -137,7 +149,6 @@ const buildQuery = (options: QueryOptions) => {
     });
   }
 
-  // Add range queries
   if (options.range) {
     options.range.forEach(({ field, ...range }) => {
       query.query.bool.filter.push({
@@ -146,34 +157,28 @@ const buildQuery = (options: QueryOptions) => {
     });
   }
 
-  // Add sort options
   if (options.sort) {
     query.sort = options.sort.map(({ field, order }) => ({
       [field]: { order },
     }));
   }
 
-  // Add pagination or search_after (default sort is required)
   if (options.search_after?.length && options.sort?.length) {
     query.search_after = options.search_after;
-    query.size = options.size ?? 50; // Ensure size is still set
+    query.size = options.size ?? 50;
   } else {
     query.from = options.from ?? 0;
     query.size = options.size ?? 50;
   }
 
-  // Add fields to include in the response
   if (options.fields) {
-    query._source = options.fields; // `_source` specifies the fields to retrieve
+    query._source = options.fields;
   }
 
-  // Add aggregations
   if (options.aggregations) {
     query.aggs = {};
     options.aggregations.forEach(({ name, field, type }) => {
-      query.aggs[name] = {
-        [type]: { field },
-      };
+      query.aggs[name] = { [type]: { field } };
     });
   }
 
