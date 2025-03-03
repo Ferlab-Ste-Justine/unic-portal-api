@@ -19,6 +19,8 @@ type TermOption = {
 type OrOption = {
   field: string;
   value: string | number;
+  useWildcard?: boolean;
+  useFuzzy?: boolean;
 };
 
 type OrGroup = OrOption[];
@@ -109,11 +111,30 @@ const buildQuery = (options: QueryOptions) => {
   }
 
   if (options.or) {
-    const orConditions = options.or.map(({ field, value }) =>
-      isNestedField(field)
-        ? { nested: { path: field.split('.')[0], query: { match: { [field]: value } } } }
-        : { match: { [field]: value } }
-    );
+    const orConditions = options.or.map(({ field, value, useWildcard, useFuzzy }) => {
+      if (isNestedField(field)) {
+        return {
+          nested: {
+            path: field.split('.')[0],
+            query:
+              useWildcard && typeof value === 'string' && value.includes('*')
+                ? { wildcard: { [field]: value.toLowerCase() } }
+                : useFuzzy
+                  ? { match: { [field]: { query: value, fuzziness } } }
+                  : { match: { [field]: value } },
+          },
+        };
+      } else {
+        if (typeof value === 'string') {
+          if (useWildcard && value.includes('*')) {
+            return { wildcard: { [field]: value.toLowerCase() } };
+          } else if (useFuzzy) {
+            return { match: { [field]: { query: value, fuzziness } } };
+          }
+        }
+        return { match: { [field]: value } };
+      }
+    });
 
     if (orConditions.length > 0) {
       query.query.bool.filter.push({

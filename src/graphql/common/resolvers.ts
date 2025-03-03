@@ -47,45 +47,16 @@ export const uniqueFieldOnIndexResolver = async ({
   args?: QueryOptions;
 }) => {
   try {
-    const or = args?.or;
-    const match = args?.match;
-    const orGroups = args?.orGroups;
-
     const isNested = isNestedField(field);
+    const { orGroups, ...otherFields } = args;
 
-    const buildCondition = (field: string, value: any) =>
-      isNestedField(field)
-        ? {
-            nested: {
-              path: field.split('.')[0],
-              query: { match: { [field]: value } },
-            },
-          }
-        : { match: { [field]: value } };
+    /** filter orGroups to remove field to not filtering itself (for Dropdown multiple select support) */
+    const orGroupsFiltered = orGroups?.filter((group) => group.every((element) => element.field !== field));
 
-    // Convert `or`, `match`, and `orGroups` into valid ES filters with nested support
-    const orFilters = or ? or.map(({ field, value }) => buildCondition(field, value)) : [];
-    const matchFilters = match ? match.map(({ field, value }) => buildCondition(field, value)) : [];
-    const orGroupFilters = orGroups
-      ? orGroups.map((group) => ({
-          bool: {
-            should: group.map(({ field, value }) => buildCondition(field, value)),
-            minimum_should_match: 1,
-          },
-        }))
-      : [];
+    const query = buildQuery({ ...otherFields, orGroups: orGroupsFiltered });
 
     const body = {
-      size: 0,
-      query: {
-        bool: {
-          filter: [
-            ...(orFilters.length > 0 ? [{ bool: { should: orFilters, minimum_should_match: 1 } }] : []),
-            ...orGroupFilters,
-          ],
-          must: matchFilters.length > 0 ? [{ bool: { should: matchFilters, minimum_should_match: 1 } }] : [],
-        },
-      },
+      ...query,
       aggs: isNested
         ? {
             nested_fields: {
