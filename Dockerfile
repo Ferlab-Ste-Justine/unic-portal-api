@@ -13,3 +13,5 @@ COPY package* ./
 RUN npm install --production
 
 CMD [ "npm", "run", "start" ]
+
+
