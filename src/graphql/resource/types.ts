@@ -37,6 +37,7 @@ export const ResourceType = new GraphQLObjectType({
     rs_project_erb_id: { type: GraphQLString },
     rs_title: { type: GraphQLString },
     rs_analyst: { type: new GraphQLList(AnalystType) },
+    search_after: { type: new GraphQLList(GraphQLString) },
   }),
 });
 

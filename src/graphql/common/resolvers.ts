@@ -25,12 +25,10 @@ export const commonResolver = async (args, esIndex) => {
       track_total_hits: true,
     });
 
-    const hits = response?.body?.hits?.hits?.map((hit) => hit._source);
+    const hits = response?.body?.hits?.hits?.map((hit) => ({ ...hit._source, search_after: hit.sort }));
     const total = response?.body?.hits?.total?.value;
-    const hitsLength = response?.body?.hits?.hits?.length;
-    const search_after = hitsLength ? response?.body?.hits?.hits[hitsLength - 1]?.sort : null;
 
-    return { hits, total, search_after };
+    return { hits, total };
   } catch (error) {
     console.error('commonResolver error', error);
     return null;

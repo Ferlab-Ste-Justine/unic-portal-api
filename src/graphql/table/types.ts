@@ -19,6 +19,7 @@ export const TableType = new GraphQLObjectType({
     tab_label_fr: { type: GraphQLString },
     tab_entity_type: { type: GraphQLString },
     tab_domain: { type: GraphQLString },
+    search_after: { type: new GraphQLList(GraphQLString) },
   }),
 });
 

@@ -21,6 +21,7 @@ export const VariableType = new GraphQLObjectType({
     var_derivation_algorithm: { type: GraphQLString },
     var_notes: { type: GraphQLString },
     value_set: { type: ValueSetType },
+    search_after: { type: new GraphQLList(GraphQLString) },
   }),
 });
 
