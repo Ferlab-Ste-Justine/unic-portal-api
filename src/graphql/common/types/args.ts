@@ -37,11 +37,20 @@ const SortOrderType = new GraphQLEnumType({
   },
 });
 
+export const missingType = new GraphQLEnumType({
+  name: 'missingType',
+  values: {
+    _first: { value: '_first' },
+    _last: { value: '_last' },
+  },
+});
+
 export const SortOptionType = new GraphQLInputObjectType({
   name: 'SortOptionType',
   fields: () => ({
     field: { type: GraphQLString },
     order: { type: SortOrderType },
+    missing: { type: missingType || GraphQLInt },
   }),
 });
 
@@ -74,6 +83,6 @@ export const ArgsType = {
   sort: { type: new GraphQLList(SortOptionType) },
   from: { type: GraphQLInt },
   size: { type: GraphQLInt },
-  search_after: { type: new GraphQLList(GraphQLString) },
+  search_after: { type: new GraphQLList(GraphQLString || GraphQLFloat) },
   aggregations: { type: new GraphQLList(AggregationOptionType) },
 };

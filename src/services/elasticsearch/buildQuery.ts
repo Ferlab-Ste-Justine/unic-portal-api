@@ -36,6 +36,7 @@ type RangeOption = {
 type SortOption = {
   field: string;
   order: 'asc' | 'desc';
+  missing?: '_first' | '_last';
 };
 
 type AggregationOption = {
@@ -179,9 +180,13 @@ const buildQuery = (options: QueryOptions) => {
   }
 
   if (options.sort) {
-    query.sort = options.sort.map(({ field, order }) => ({
-      [field]: { order },
-    }));
+    query.sort = options.sort.map(({ field, order, missing }) => {
+      // set default missing to 0 to allow sorting on null values (ES default is _last) and fix null dates error
+      const _missing = missing || 0;
+      return {
+        [field]: { order, missing: _missing },
+      };
+    });
   }
 
   if (options.search_after?.length && options.sort?.length) {

@@ -15,7 +15,7 @@ export const commonResolver = async (args, esIndex) => {
       fields: args.fields,
       aggregations: args.aggregations,
       sort: args.sort,
-      search_after: args.search_after?.filter(Boolean),
+      search_after: args.search_after,
     };
     const body = buildQuery(queryOptions);
 
@@ -25,7 +25,19 @@ export const commonResolver = async (args, esIndex) => {
       track_total_hits: true,
     });
 
-    const hits = response?.body?.hits?.hits?.map((hit) => ({ ...hit._source, search_after: hit.sort }));
+    const hits = response?.body?.hits?.hits?.map((hit) => {
+      // Convert unsafe integers values safely because ES returns bad -9223372036854775808 on 'sort' for null dates
+      // https://github.com/elastic/elasticsearch-js/issues/662
+      const esToSafeJsInt = (x) => {
+        if (Number.isInteger(x) && !Number.isSafeInteger(x)) {
+          return 0; //Placeholder timestamp for null dates
+        }
+        return x;
+      };
+
+      const search_after = hit.sort?.map(esToSafeJsInt);
+      return { ...hit._source, search_after };
+    });
     const total = response?.body?.hits?.total?.value;
 
     return { hits, total };
