@@ -60,6 +60,7 @@ export type QueryOptions = {
 };
 
 const fuzziness = 'AUTO'; // AUTO allows small typos
+const formatValueForWildcard = (value: string) => value.toLowerCase().replace(/ /g, '*');
 
 const buildQuery = (options: QueryOptions) => {
   const query: any = {
@@ -89,7 +90,7 @@ const buildQuery = (options: QueryOptions) => {
           // 🔹 Wildcard query for values with `*`
           if (useWildcard && value.includes('*')) {
             query.query.bool.must.push({
-              wildcard: { [field]: value.toLowerCase() },
+              wildcard: { [field]: formatValueForWildcard(value) },
             });
             // 🔹 Fuzzy match query (allows typos)
           } else if (useFuzzy) {
@@ -119,7 +120,7 @@ const buildQuery = (options: QueryOptions) => {
             path: field.split('.')[0],
             query:
               useWildcard && typeof value === 'string' && value.includes('*')
-                ? { wildcard: { [field]: value.toLowerCase() } }
+                ? { wildcard: { [field]: formatValueForWildcard(value) } }
                 : useFuzzy
                   ? { match: { [field]: { query: value, fuzziness } } }
                   : { match: { [field]: value } },
@@ -128,7 +129,7 @@ const buildQuery = (options: QueryOptions) => {
       } else {
         if (typeof value === 'string') {
           if (useWildcard && value.includes('*')) {
-            return { wildcard: { [field]: value.toLowerCase() } };
+            return { wildcard: { [field]: formatValueForWildcard(value) } };
           } else if (useFuzzy) {
             return { match: { [field]: { query: value, fuzziness } } };
           }
