@@ -1,2 +1,4 @@
 #cross-spawn (package.json) │ CVE-2024-21538 │ HIGH
 CVE-2024-21538
+#ip (package.json) │ CVE-2024-29415 │ HIGH │ affected │ 2.0.0 │ node-ip: Incomplete fix for CVE-2023-42282
+CVE-2024-29415
