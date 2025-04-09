@@ -1,5 +1,8 @@
 import { GraphQLBoolean, GraphQLFloat, GraphQLObjectType, GraphQLString } from 'graphql';
 
+import { ResourceType } from '#src/graphql/resource/types';
+import { TableType } from '#src/graphql/table/types';
+
 export {
   FieldValueType,
   RangeOptionType,
@@ -17,6 +20,17 @@ export const SourceSystemType = new GraphQLObjectType({
     rs_name: { type: GraphQLString },
     published: { type: GraphQLBoolean },
     stat_etl: { type: StatETLType },
+  }),
+});
+
+export const FromVariableType = new GraphQLObjectType({
+  name: 'FromVariableType',
+  fields: () => ({
+    var_id: { type: GraphQLFloat },
+    var_name: { type: GraphQLString },
+    published: { type: GraphQLBoolean },
+    resource: { type: ResourceType },
+    table: { type: TableType },
   }),
 });
 
