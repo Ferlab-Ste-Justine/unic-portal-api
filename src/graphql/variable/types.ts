@@ -1,6 +1,6 @@
 import { GraphQLFloat, GraphQLList, GraphQLObjectType, GraphQLString } from 'graphql';
 
-import { SourceSystemType } from '#src/graphql/common/types';
+import { FromVariableType, SourceSystemType } from '#src/graphql/common/types';
 import { ResourceType } from '#src/graphql/resource/types';
 import { TableType } from '#src/graphql/table/types';
 
@@ -16,6 +16,7 @@ export const VariableType = new GraphQLObjectType({
     resource: { type: ResourceType },
     table: { type: TableType },
     var_from_source_systems: { type: new GraphQLList(SourceSystemType) },
+    var_from_variables: { type: new GraphQLList(FromVariableType) },
     var_label_fr: { type: GraphQLString },
     var_label_en: { type: GraphQLString },
     var_derivation_algorithm: { type: GraphQLString },
