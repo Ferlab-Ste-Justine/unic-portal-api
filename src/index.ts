@@ -6,11 +6,11 @@ import express from 'express';
 import http from 'http';
 import Keycloak from 'keycloak-connect';
 
-import buildApp from './app';
-import { isDev, port } from './config/env';
-import keycloakConfig from './config/keycloak';
-import schema from './graphql/schema';
-import esClient from './services/elasticsearch/client';
+import buildApp from './app.js';
+import { isDev, port } from './config/env.js';
+import keycloakConfig from './config/keycloak.js';
+import schema from './graphql/schema.js';
+import esClient from './services/elasticsearch/client.js';
 
 const startApp = async () => {
   try {

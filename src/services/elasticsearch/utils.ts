@@ -1,6 +1,6 @@
 import { GraphQLList, GraphQLObjectType } from 'graphql';
 
-import schema from '#src/graphql/schema';
+import schema from '#src/graphql/schema.js';
 
 export const isNestedField = (field: string) => {
   const firstPathField = field.split('.')[0];

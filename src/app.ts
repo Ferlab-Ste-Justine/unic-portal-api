@@ -4,9 +4,9 @@ import express, { Express } from 'express';
 import { Keycloak } from 'keycloak-connect';
 import NodeCache from 'node-cache';
 
-import packageJson from '../package.json' assert { type: 'json' };
-import { cacheTTL, esHost, keycloakURL } from './config/env';
-import statsRouter from './routes/stats';
+import packageJson from '../package.json' with { type: 'json' };
+import { cacheTTL, esHost, keycloakURL } from './config/env.js';
+import statsRouter from './routes/stats/index.js';
 const { dependencies, version } = packageJson;
 
 const buildApp = (keycloak: Keycloak): Express => {

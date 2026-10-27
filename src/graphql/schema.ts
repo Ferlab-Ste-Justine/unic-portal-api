@@ -1,14 +1,14 @@
 import { GraphQLObjectType, GraphQLSchema } from 'graphql';
 
-import { getResources, getResourcesCount, getResourcesStats, getResourcesType } from '#src/graphql/resource/queries';
-import { getTables, getTablesResourceNames, getTablesResourceTypes } from '#src/graphql/table/queries';
+import { getResources, getResourcesCount, getResourcesStats, getResourcesType } from '#src/graphql/resource/queries.js';
+import { getTables, getTablesResourceNames, getTablesResourceTypes } from '#src/graphql/table/queries.js';
 import {
   getVariables,
   getVariablesResourceCodes,
   getVariablesResourceNames,
   getVariablesResourceTypes,
   getVariablesTableNames,
-} from '#src/graphql/variable/queries';
+} from '#src/graphql/variable/queries.js';
 
 // FYI GraphQL also support mutations
 // const mutation = new GraphQLObjectType({

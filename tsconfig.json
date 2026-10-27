@@ -20,8 +20,7 @@
     "lib": ["ESNext"],
   },
   "ts-node": {
-    "esm": true,
-    "experimentalSpecifierResolution": "node"
+    "esm": true
   },
   "include": ["src/*.ts"],
   "exclude": ["node_modules"]

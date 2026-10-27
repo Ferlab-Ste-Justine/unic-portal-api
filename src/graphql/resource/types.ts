@@ -1,8 +1,8 @@
 import { GraphQLBoolean, GraphQLFloat, GraphQLList, GraphQLObjectType, GraphQLString } from 'graphql';
 
-import { StatETLType } from '#src/graphql/common/types';
-import { TableType } from '#src/graphql/table/types';
-import { VariableType } from '#src/graphql/variable/types';
+import { StatETLType } from '#src/graphql/common/types/index.js';
+import { TableType } from '#src/graphql/table/types.js';
+import { VariableType } from '#src/graphql/variable/types.js';
 
 export const AnalystType = new GraphQLObjectType({
   name: 'AnalystType',

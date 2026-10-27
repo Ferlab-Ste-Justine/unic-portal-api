@@ -1,7 +1,7 @@
 import { GraphQLBoolean, GraphQLFloat, GraphQLObjectType, GraphQLString } from 'graphql';
 
-import { ResourceType } from '#src/graphql/resource/types';
-import { TableType } from '#src/graphql/table/types';
+import { ResourceType } from '#src/graphql/resource/types.js';
+import { TableType } from '#src/graphql/table/types.js';
 
 export {
   FieldValueType,
@@ -10,7 +10,7 @@ export {
   AggregationTypeOptionType,
   AggregationOptionType,
   ArgsType,
-} from './args';
+} from './args.js';
 
 export const SourceSystemType = new GraphQLObjectType({
   name: 'SourceSystemType',

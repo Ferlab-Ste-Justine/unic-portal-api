@@ -1,4 +1,4 @@
-import { isNestedField } from './utils';
+import { isNestedField } from './utils.js';
 
 // If you want exact matching → Use match.
 // If you want to allow typos → Use fuzzy: true.

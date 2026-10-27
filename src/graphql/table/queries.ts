@@ -1,11 +1,11 @@
 import { GraphQLList, GraphQLString } from 'graphql';
 
-import { esTableIndex } from '#src/config/env';
-import { uniqueFieldOnIndexResolver } from '#src/graphql/common/resolvers';
-import { ArgsType } from '#src/graphql/common/types';
+import { esTableIndex } from '#src/config/env.js';
+import { uniqueFieldOnIndexResolver } from '#src/graphql/common/resolvers.js';
+import { ArgsType } from '#src/graphql/common/types/index.js';
 
-import { tableResolver } from './resolvers';
-import { TablesType } from './types';
+import { tableResolver } from './resolvers.js';
+import { TablesType } from './types.js';
 
 export const getTables = {
   type: TablesType,

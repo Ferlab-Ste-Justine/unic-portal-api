@@ -1,7 +1,7 @@
-import { esResourceIndex } from '#src/config/env';
-import { commonResolver } from '#src/graphql/common/resolvers';
-import { esClient } from '#src/services/elasticsearch';
-import buildQuery, { QueryOptions } from '#src/services/elasticsearch/buildQuery';
+import { esResourceIndex } from '#src/config/env.js';
+import { commonResolver } from '#src/graphql/common/resolvers.js';
+import buildQuery, { QueryOptions } from '#src/services/elasticsearch/buildQuery.js';
+import { esClient } from '#src/services/elasticsearch/index.js';
 
 export const resourceResolver = async (parent, args) => {
   try {
