@@ -10,6 +10,9 @@ FROM node:24.22.1-alpine AS prod-image
 WORKDIR /code
 COPY --from=build-image ./code/dist ./dist
 COPY package* ./
-RUN npm install --production
+RUN npm ci --omit=dev --omit=optional \
+  # Package managers are not needed at runtime and ship their own vulnerable dependencies
+  && rm -rf /usr/local/lib/node_modules/npm /usr/local/lib/node_modules/corepack /opt/yarn-* \
+    /usr/local/bin/npm /usr/local/bin/npx /usr/local/bin/corepack /usr/local/bin/yarn /usr/local/bin/yarnpkg
 
-CMD [ "npm", "run", "start" ]
+CMD [ "node", "--no-warnings", "./dist/src/index.js" ]
