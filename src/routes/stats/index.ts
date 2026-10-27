@@ -1,7 +1,7 @@
 import express from 'express';
 
-import { esResourceIndex, esVariableIndex } from '#src/config/env';
-import { fetchCount, fetchProjectsCount, fetchSourceSystemCount } from '#src/services/elasticsearch';
+import { esResourceIndex, esVariableIndex } from '#src/config/env.js';
+import { fetchCount, fetchProjectsCount, fetchSourceSystemCount } from '#src/services/elasticsearch/index.js';
 
 const router = express.Router();
 

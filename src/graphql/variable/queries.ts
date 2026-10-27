@@ -1,11 +1,11 @@
 import { GraphQLList, GraphQLString } from 'graphql';
 
-import { esVariableIndex } from '#src/config/env';
-import { uniqueFieldOnIndexResolver } from '#src/graphql/common/resolvers';
-import { ArgsType } from '#src/graphql/common/types';
+import { esVariableIndex } from '#src/config/env.js';
+import { uniqueFieldOnIndexResolver } from '#src/graphql/common/resolvers.js';
+import { ArgsType } from '#src/graphql/common/types/index.js';
 
-import { variablesResolver } from './resolvers';
-import { VariablesType } from './types';
+import { variablesResolver } from './resolvers.js';
+import { VariablesType } from './types.js';
 
 export const getVariables = {
   type: VariablesType,

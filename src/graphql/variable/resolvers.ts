@@ -1,5 +1,5 @@
-import { esVariableIndex } from '#src/config/env';
-import { commonResolver } from '#src/graphql/common/resolvers';
+import { esVariableIndex } from '#src/config/env.js';
+import { commonResolver } from '#src/graphql/common/resolvers.js';
 
 export const variablesResolver = async (parent, args) => {
   try {

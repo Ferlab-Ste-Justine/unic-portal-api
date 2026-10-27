@@ -1,6 +1,6 @@
-import { esVariableIndex } from '#src/config/env';
+import { esVariableIndex } from '#src/config/env.js';
 
-import client from './client';
+import client from './client.js';
 
 export const fetchProjectsCount = async (indexName: string): Promise<number> => {
   try {

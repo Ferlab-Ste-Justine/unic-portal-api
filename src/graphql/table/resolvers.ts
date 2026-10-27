@@ -1,5 +1,5 @@
-import { esTableIndex } from '#src/config/env';
-import { commonResolver } from '#src/graphql/common/resolvers';
+import { esTableIndex } from '#src/config/env.js';
+import { commonResolver } from '#src/graphql/common/resolvers.js';
 
 export const tableResolver = async (_, args) => {
   try {

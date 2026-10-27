@@ -1,8 +1,8 @@
 import { graphql } from 'graphql';
 import { ExecutionResult } from 'graphql/execution/execute';
 
-import esClient from '../services/elasticsearch/client';
-import schema from './schema';
+import esClient from '../services/elasticsearch/client.js';
+import schema from './schema.js';
 
 interface IrunQuery {
   query: string;

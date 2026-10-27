@@ -1,8 +1,8 @@
 import { GraphQLFloat, GraphQLList, GraphQLObjectType, GraphQLString } from 'graphql';
 
-import { FromVariableType, SourceSystemType } from '#src/graphql/common/types';
-import { ResourceType } from '#src/graphql/resource/types';
-import { TableType } from '#src/graphql/table/types';
+import { FromVariableType, SourceSystemType } from '#src/graphql/common/types/index.js';
+import { ResourceType } from '#src/graphql/resource/types.js';
+import { TableType } from '#src/graphql/table/types.js';
 
 export const VariableType = new GraphQLObjectType({
   name: 'VariableType',

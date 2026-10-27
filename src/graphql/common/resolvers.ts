@@ -1,6 +1,6 @@
-import { esClient } from '#src/services/elasticsearch';
-import buildQuery, { QueryOptions } from '#src/services/elasticsearch/buildQuery';
-import { isNestedField } from '#src/services/elasticsearch/utils';
+import buildQuery, { QueryOptions } from '#src/services/elasticsearch/buildQuery.js';
+import { esClient } from '#src/services/elasticsearch/index.js';
+import { isNestedField } from '#src/services/elasticsearch/utils.js';
 
 export const commonResolver = async (args, esIndex) => {
   try {
